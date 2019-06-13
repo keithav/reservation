@@ -3,11 +3,12 @@ const mongoose = require('mongoose');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const path = require('path');
 const keys = require('../config/keys.js');
 const mongooseStart = require('./bin/mongoose');
-const cors = require('cors');
+const Session = require('./models/user');
 
 // required for passport to work properly
 const passportSetup = require('./services/passport');
@@ -35,24 +36,25 @@ app.use(
     keys: [keys.session.cookieKey],
   })
 );
+app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(express.static(path.join(__dirname, '../build')));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // app.use('/profile', profileRoutes);
 
 const pi = require('./piController');
 const eventController = require('./eventController');
 
-app.use('/queue', Q);
-app.use('/events', events);
-
-app.use(express.static(path.join(__dirname, '../build')));
-app.use(userRoutes);
-app.use('/auth', authRoutes);
 app.use('/queue', loginStatus.isLoggedIn, Q);
 app.use('/events', events);
+
+app.use(userRoutes); // serves /logged_out and is_logged_in endpoints
+app.use('/auth', authRoutes);
+// app.use('/queue', loginStatus.isLoggedIn, Q);
+// app.use('/events', events);
 
 let roomInUse = false;
 const eventObj = {
@@ -101,32 +103,52 @@ const interval = setInterval(() => {
   }
 }, 1000);
 
-app.get('/api/', (req, res) => {
-  console.log('/api');
-  const value = objIO.doorStatus.readSync();
-  objIO.doorStatus.writeSync(value ^ 1);
-  res.json('Allo!!!');
-});
+// app.get('/api/', (req, res) => {
+//   console.log('/api');
+//   const value = objIO.doorStatus.readSync();
+//   objIO.doorStatus.writeSync(value ^ 1);
+//   res.json('Allo!!!');
+// });
 
 app.post('/sms', (req, res) => {
   const message = req.body.message;
   console.log(`message:${message}`);
-  twilio.messages.create(
-    {
-      to: '(805)765-1413',
-      from: config.twilio.numberx,
-      body: `Reservation:\n\n${message}`,
-    },
-    (err, message) => {
-      if (err) {
-        console.log('Twilio Error');
-        console.log(err);
-        res.status(444).json('SMS error');
+  if ('userId' in req.cookies) {
+    const phone = 'phone' in req.body ? req.body.phone : '';
+    const userId = req.cookies.userId;
+    Session.findOne(
+      { _id: userId },
+
+      (err, userDataArr) => {
+        if (err) {
+          res.send('err');
+        } else {
+          const user = userDataArr;
+          if (user.phone) {
+            twilio.messages.create(
+              {
+                to: user.phone,
+                from: config.twilio.number,
+                body: `Reservation:\n\n${message}`,
+              },
+              (err, message) => {
+                if (err) {
+                  console.log('Twilio Error');
+                  console.log(err);
+                  res.status(444).json('SMS error');
+                }
+                console.log(message.sid);
+              }
+            );
+            res.json('SENT!');
+            return;
+          }else{
+            res.status(445).send("No Phone for user")
+          }
+        }
       }
-      console.log(message.sid);
-    }
-  );
-  res.json('SENT!');
+    );
+  }
 });
 
 // get current door status
