@@ -1,5 +1,6 @@
 import React from 'react';
 import './HeaderContainer.css';
+import Occupado from '../Components/Occupado';
 
 const HeaderContainer = () => {
   return (
@@ -8,17 +9,20 @@ const HeaderContainer = () => {
         <div className="inner-flex-desktop">
           <h1>ReservationSmith</h1>
           <div className="occupied-indicator">
-            <i className="fa fa-times-circle"></i><span> Occupado!</span>
+            <i className="fa fa-times-circle" />
+            <span>
+              <Occupado />
+            </span>
           </div>
         </div>
         <div className="inner-flex-mobile">
           <div>
             <div>
-              <i className="fas fa-bars icon-margin-left"></i>
+              <i className="fas fa-bars icon-margin-left" />
               <h1 className="inline">RS</h1>
             </div>
           </div>
-          <i className="fa fa-times-circle"></i>
+          <i className="fa fa-times-circle" />
         </div>
       </div>
     </div>

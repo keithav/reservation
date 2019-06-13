@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const path = require('path');
 const keys = require('../config/keys.js');
 const mongooseStart = require('./bin/mongoose');
+const cors = require('cors');
 
 // required for passport to work properly
 const passportSetup = require('./services/passport');
@@ -25,6 +26,7 @@ mongooseStart();
 const app = express();
 // app.use(helmet());
 
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(
@@ -37,7 +39,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(express.static(path.join(__dirname, '../build')));
-
 
 // app.use('/profile', profileRoutes);
 
@@ -100,7 +101,6 @@ const interval = setInterval(() => {
   }
 }, 1000);
 
-
 app.get('/api/', (req, res) => {
   console.log('/api');
   const value = objIO.doorStatus.readSync();
@@ -118,10 +118,10 @@ app.post('/sms', (req, res) => {
       body: `Reservation:\n\n${message}`,
     },
     (err, message) => {
-      if(err){
+      if (err) {
         console.log('Twilio Error');
         console.log(err);
-        res.status(444).json("SMS error")
+        res.status(444).json('SMS error');
       }
       console.log(message.sid);
     }
@@ -132,7 +132,7 @@ app.post('/sms', (req, res) => {
 // get current door status
 app.get('/door', (req, res) => {
   console.log(`/door`);
-  res.json(objIO.doorStatus.readSync());
+  res.json(roomInUse);
 });
 
 // change door status DEV only
@@ -239,7 +239,7 @@ if (CURRENT_ENV === 'production') {
 }
 
 app.get('/api/unauthorized', (req, res) => {
-  res.send('You aren\'t authorized to access this');
+  res.send("You aren't authorized to access this");
 });
 
 // catch all 404 function
