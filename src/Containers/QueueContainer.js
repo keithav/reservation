@@ -18,9 +18,9 @@ const QueueContainer = () => {
   const [queue, setQueue] = useState(true);
 
   const addToQueue = () => {
+    console.log("Add to Queue");
     const phone = document.getElementById('phone').value;
     document.getElementById('phone').value = '';
-    console.log(phone);
     fetch('/queue/push', {
       method: 'POST',
       body: JSON.stringify({ phone: phone }),
@@ -29,8 +29,8 @@ const QueueContainer = () => {
         return response.json();
       })
       .then(function(myJson) {
+        console.log("Second Then");
         const newQueue = [];
-        console.log(myJson);
         myJson.forEach(user => {
           newQueue.push(user.username);
         });
@@ -43,6 +43,8 @@ const QueueContainer = () => {
     <div className="content">
       <div className="desktop-content">
         <div className="container">
+        <a className="loginButton" href="/auth/google"></a>
+
           FISH BOWL QUEUE
           <div className="queue-box">
             <CurrentUser />
@@ -66,7 +68,7 @@ const QueueContainer = () => {
           </div>
         </div>
         <div className="container">
-          Fishbowl Event
+        Fishbowl Events. Average length: 8:06
           <div className="queue-box">
             <Events />
           </div>
@@ -97,7 +99,7 @@ const QueueContainer = () => {
           </div>
         </div>
         <div className="container">
-          Fishbowl Event
+          Fishbowl Events. Average length: 8:06
           <div className="queue-box">
             <Events />
           </div>

@@ -19,8 +19,7 @@ const App = () => {
       <Router>
         <HeaderContainer />
         <div className="content">
-          <Route path="/" exact component={SignupContainer} />
-          <Route path="/line" exact component={QueueContainer} />
+          <QueueContainer />
         </div>
       </Router>
     </div>
