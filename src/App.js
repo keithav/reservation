@@ -1,18 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import HeaderContainer from './Containers/HeaderContainer';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom';
 import SignupContainer from './Containers/SignupContainer';
 import QueueContainer from './Containers/QueueContainer';
+const axios = require('axios');
 
 const App = () => {
-  //test a request to the server
-  // fetch(`/api/`, {
-  //   accept: "application/json"
-  // })
-  //   .then(checkStatus => { })
-  //   .then(parseJSON => { console.log(`Json: ${parseJSON}`);});
+  // test a request to the server
+  fetch(`/queue/`).then(function(response) {
+    if (response.status === 200) console.log('Logged in');
+    else console.log('Not Logged');
+  });
 
   return (
     <div className="App">

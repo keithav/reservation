@@ -1,37 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 const axios = require('axios');
 
-class Occupado extends React.Component {
-  state = {
-    delay: 1000,
-    doorStatus: '----',
-  };
+const Occupado = () => {
+  // const [delay, setDelay] = useState(2000);
+  const [checkDoor, setCheckDoor] = useState(true);
 
-  componentDidMount() {
-    this.interval = setInterval(this.checkDoor, this.state.delay);
-  }
-  componentDidUpdate() {
-    clearInterval(this.interval);
-    this.interval = setInterval(this.checkDoor, this.state.delay);
-  }
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
+  useEffect(() => {
+    // console.log("checking room status", checkDoor)
+    const interval = setInterval(() => {
+      check();
+    }, 2000);
+  });
 
-  checkDoor = () => {
-    var self = this;
-    axios.get('/door').then(function(response) {
-      self.setState({ doorStatus: response.data ? 'Occupado!' : 'Open' });
+  const check = () => {
+    axios.get('/door').then(response => {
+      console.log('RESPONSE.DATA', response.data);
+      setCheckDoor(response.data);
     });
   };
 
-  render() {
-    return (
-      <>
-        <h1>{this.state.doorStatus}</h1>
-      </>
+  let description;
+  if (checkDoor === true) {
+    description = (
+      <div>
+        <i className="fa fa-times-circle" /> <span> Occupado!</span>{' '}
+      </div>
+    );
+  } else if (checkDoor === false) {
+    description = (
+      <div>
+        <i className="fas fa-check-circle" /> <span> Open!</span>{' '}
+      </div>
     );
   }
-}
 
+  return <>{description}</>;
+};
 export default Occupado;
