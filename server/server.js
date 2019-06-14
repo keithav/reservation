@@ -27,7 +27,6 @@ mongooseStart();
 const app = express();
 // app.use(helmet());
 
-app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(
@@ -89,7 +88,8 @@ const interval = setInterval(() => {
       if (Q.queue.length > 0) pi.turnOnLED('yellow');
       else pi.turnOffLED('yellow');
     }
-  } else { //door open
+  } else {
+    //door open
     if (roomInUse === true) {
       pi.turnOnLED('green', 1000);
       roomInUse = false;
